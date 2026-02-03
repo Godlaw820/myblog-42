@@ -1,0 +1,47 @@
+{
+  "name": "profile",
+  "title": "个人信息",
+  "schemas": [
+    {
+      "name": "name",
+      "title": "姓名",
+      "type": "String"
+    },
+    {
+      "name": "title",
+      "title": "职位",
+      "type": "String"
+    },
+    {
+      "name": "avatar",
+      "title": "头像",
+      "type": "Image"
+    },
+    {
+      "name": "bio",
+      "title": "简介",
+      "type": "MultiLineString"
+    },
+    {
+      "name": "location",
+      "title": "位置",
+      "type": "String"
+    },
+    {
+      "name": "skills",
+      "title": "技能专长",
+      "type": "Array",
+      "items": {
+        "type": "Object"
+      }
+    },
+    {
+      "name": "achievements",
+      "title": "成就与荣誉",
+      "type": "Array",
+      "items": {
+        "type": "Object"
+      }
+    }
+  ]
+}

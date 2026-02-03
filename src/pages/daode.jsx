@@ -1,74 +1,21 @@
 // @ts-ignore;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Calendar, Clock, Eye, Filter, Search } from 'lucide-react';
+// @ts-ignore;
+import { useToast } from '@/components/ui';
 
 import { Navbar } from '@/components/Navbar.jsx';
 import { GlassCard } from '@/components/GlassCard.jsx';
 export default function Daode(props) {
+  const {
+    toast
+  } = useToast();
   const [selectedCategory, setSelectedCategory] = useState('全部');
   const [searchQuery, setSearchQuery] = useState('');
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const categories = ['全部', '技术', '设计', '生活', '随笔'];
-  const articles = [{
-    id: 1,
-    title: '探索现代前端开发的未来',
-    excerpt: '随着技术的不断演进，前端开发正在经历一场深刻的变革。从传统的页面构建到如今的应用开发，我们需要重新思考开发范式...',
-    category: '技术',
-    date: '2024-01-15',
-    readTime: '8 分钟',
-    views: 2847,
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&q=80'
-  }, {
-    id: 2,
-    title: '极简主义生活的艺术',
-    excerpt: '在这个信息爆炸的时代，学会做减法比做加法更重要。极简主义不仅仅是生活方式，更是一种思维方式的转变...',
-    category: '生活',
-    date: '2024-01-12',
-    readTime: '6 分钟',
-    views: 1923,
-    image: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=800&q=80'
-  }, {
-    id: 3,
-    title: '设计思维在产品开发中的应用',
-    excerpt: '优秀的产品不仅仅是功能的堆砌，更是对用户需求的深刻理解。设计思维为我们提供了一套系统化的方法论...',
-    category: '设计',
-    date: '2024-01-10',
-    readTime: '10 分钟',
-    views: 3156,
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80'
-  }, {
-    id: 4,
-    title: '秋日随笔：时光的痕迹',
-    excerpt: '秋天的阳光总是带着一种特殊的温暖，让人忍不住想要停下来，静静地感受时光的流逝...',
-    category: '随笔',
-    date: '2024-01-08',
-    readTime: '5 分钟',
-    views: 1452,
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80'
-  }, {
-    id: 5,
-    title: 'React Hooks 最佳实践指南',
-    excerpt: 'Hooks 的出现彻底改变了我们编写 React 组件的方式。掌握这些最佳实践，让你的代码更加优雅和高效...',
-    category: '技术',
-    date: '2024-01-05',
-    readTime: '12 分钟',
-    views: 4231,
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80'
-  }, {
-    id: 6,
-    title: '色彩心理学在界面设计中的运用',
-    excerpt: '色彩不仅仅是视觉元素，更是情感的载体。了解色彩心理学，让你的设计更具说服力和感染力...',
-    category: '设计',
-    date: '2024-01-03',
-    readTime: '7 分钟',
-    views: 2189,
-    image: 'https://images.unsplash.com/photo-1561489413-985b06da5bee?w=800&q=80'
-  }];
-  const filteredArticles = articles.filter(article => {
-    const matchesCategory = selectedCategory === '全部' || article.category === selectedCategory;
-    const matchesSearch = searchQuery === '' || article.title.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
   const handleNavigate = pageId => {
     props.$w.utils.navigateTo({
       pageId,
@@ -83,6 +30,62 @@ export default function Daode(props) {
       }
     });
   };
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        setLoading(true);
+        const result = await props.$w.cloud.callDataSource({
+          dataSourceName: 'article',
+          methodName: 'wedaGetRecordsV2',
+          params: {
+            filter: {
+              where: {}
+            },
+            select: {
+              $master: true
+            },
+            orderBy: [{
+              date: 'desc'
+            }],
+            pageSize: 100,
+            pageNumber: 1
+          }
+        });
+        if (result.records) {
+          setArticles(result.records.map(article => ({
+            id: article._id,
+            title: article.title,
+            excerpt: article.excerpt,
+            category: article.category,
+            date: article.date,
+            readTime: article.readTime,
+            views: article.views,
+            image: article.image
+          })));
+        }
+      } catch (error) {
+        console.error('获取文章失败:', error);
+        toast({
+          title: '获取文章失败',
+          description: error.message || '请稍后重试',
+          variant: 'destructive'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArticles();
+  }, [props.$w.cloud, toast]);
+  const filteredArticles = articles.filter(article => {
+    const matchesCategory = selectedCategory === '全部' || article.category === selectedCategory;
+    const matchesSearch = searchQuery === '' || article.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+  if (loading) {
+    return <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23] flex items-center justify-center">
+        <div className="text-white text-xl">加载中...</div>
+      </div>;
+  }
   return <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23] relative overflow-hidden">
       {/* Background Decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

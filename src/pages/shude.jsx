@@ -1,66 +1,85 @@
 // @ts-ignore;
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Code, Database, Layout, Server, Smartphone, Zap } from 'lucide-react';
+// @ts-ignore;
+import { useToast } from '@/components/ui';
 
 import { Navbar } from '@/components/Navbar.jsx';
 import { GlassCard } from '@/components/GlassCard.jsx';
 export default function Shude(props) {
+  const {
+    toast
+  } = useToast();
+  const [techProjects, setTechProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const handleNavigate = pageId => {
     props.$w.utils.navigateTo({
       pageId,
       params: {}
     });
   };
-  const techProjects = [{
-    id: 1,
-    title: 'React 组件库开发',
-    description: '从零开始构建一个企业级 React 组件库，包含 30+ 常用组件，支持主题定制和按需加载。',
-    tags: ['React', 'TypeScript', 'Storybook'],
-    icon: Layout,
-    color: '#00d4ff',
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80'
-  }, {
-    id: 2,
-    title: 'Node.js 微服务架构',
-    description: '基于 Node.js 构建的微服务架构，实现服务发现、负载均衡、熔断降级等核心功能。',
-    tags: ['Node.js', 'Docker', 'Kubernetes'],
-    icon: Server,
-    color: '#ff6b9d',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80'
-  }, {
-    id: 3,
-    title: '数据库性能优化',
-    description: '深入分析数据库性能瓶颈，通过索引优化、查询优化、分库分表等手段提升系统性能。',
-    tags: ['MySQL', 'Redis', 'MongoDB'],
-    icon: Database,
-    color: '#00d4ff',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'
-  }, {
-    id: 4,
-    title: '移动端响应式设计',
-    description: '实现一套代码适配多端设备，通过媒体查询、弹性布局、视口单位等技术实现完美响应式。',
-    tags: ['CSS', 'Mobile', 'Responsive'],
-    icon: Smartphone,
-    color: '#ff6b9d',
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80'
-  }, {
-    id: 5,
-    title: '前端工程化实践',
-    description: '搭建完整的前端工程化体系，包括构建优化、代码规范、自动化测试、CI/CD 流程等。',
-    tags: ['Webpack', 'Vite', 'Jest'],
-    icon: Zap,
-    color: '#00d4ff',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&q=80'
-  }, {
-    id: 6,
-    title: '算法与数据结构',
-    description: '深入理解常用算法和数据结构，通过实际案例展示如何将理论应用到实际开发中。',
-    tags: ['Algorithm', 'Data Structure', 'JavaScript'],
-    icon: Code,
-    color: '#ff6b9d',
-    image: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&q=80'
-  }];
+  useEffect(() => {
+    const fetchTechArticles = async () => {
+      try {
+        setLoading(true);
+
+        // 获取技术类别的文章
+        const result = await props.$w.cloud.callDataSource({
+          dataSourceName: 'article',
+          methodName: 'wedaGetRecordsV2',
+          params: {
+            filter: {
+              where: {
+                $and: [{
+                  category: {
+                    $eq: '技术'
+                  }
+                }]
+              }
+            },
+            select: {
+              $master: true
+            },
+            orderBy: [{
+              date: 'desc'
+            }],
+            pageSize: 100,
+            pageNumber: 1
+          }
+        });
+        if (result.records) {
+          // 为每篇文章分配图标和颜色
+          const icons = [Layout, Server, Database, Smartphone, Zap, Code];
+          const colors = ['#00d4ff', '#ff6b9d'];
+          setTechProjects(result.records.map((article, index) => ({
+            id: article._id,
+            title: article.title,
+            description: article.excerpt,
+            tags: ['技术'],
+            icon: icons[index % icons.length],
+            color: colors[index % colors.length],
+            image: article.image
+          })));
+        }
+      } catch (error) {
+        console.error('获取技术文章失败:', error);
+        toast({
+          title: '获取技术文章失败',
+          description: error.message || '请稍后重试',
+          variant: 'destructive'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTechArticles();
+  }, [props.$w.cloud, toast]);
+  if (loading) {
+    return <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] flex items-center justify-center">
+        <div className="text-white text-xl">加载中...</div>
+      </div>;
+  }
   return <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
       {/* Background Decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

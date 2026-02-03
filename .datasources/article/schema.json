@@ -1,0 +1,47 @@
+{
+  "name": "article",
+  "title": "文章",
+  "schemas": [
+    {
+      "name": "title",
+      "title": "标题",
+      "type": "String"
+    },
+    {
+      "name": "content",
+      "title": "内容",
+      "type": "RichText"
+    },
+    {
+      "name": "excerpt",
+      "title": "摘要",
+      "type": "MultiLineString"
+    },
+    {
+      "name": "category",
+      "title": "分类",
+      "type": "String"
+    },
+    {
+      "name": "date",
+      "title": "发布日期",
+      "type": "Date",
+      "format": "date"
+    },
+    {
+      "name": "readTime",
+      "title": "阅读时间",
+      "type": "String"
+    },
+    {
+      "name": "views",
+      "title": "浏览量",
+      "type": "Number"
+    },
+    {
+      "name": "image",
+      "title": "封面图",
+      "type": "Image"
+    }
+  ]
+}

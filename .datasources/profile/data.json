@@ -1,0 +1,52 @@
+[
+  {
+    "_id": "1",
+    "name": "Alex Chen",
+    "title": "全栈开发工程师",
+    "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80",
+    "bio": "5 年开发经验，专注于前端技术和用户体验。热爱开源，喜欢分享技术心得。",
+    "location": "北京，中国",
+    "skills": [
+      {
+        "name": "React / Vue",
+        "level": 95
+      },
+      {
+        "name": "TypeScript",
+        "level": 90
+      },
+      {
+        "name": "Node.js",
+        "level": 85
+      },
+      {
+        "name": "Python",
+        "level": 80
+      },
+      {
+        "name": "UI/UX Design",
+        "level": 75
+      },
+      {
+        "name": "DevOps",
+        "level": 70
+      }
+    ],
+    "achievements": [
+      {
+        "title": "开源贡献者",
+        "description": "在 GitHub 上贡献了多个开源项目，累计获得 1000+ stars"
+      },
+      {
+        "title": "技术博主",
+        "description": "在各大技术平台发表原创文章 50+ 篇，累计阅读量 10万+"
+      },
+      {
+        "title": "持续学习",
+        "description": "坚持每天学习新技术，已连续打卡 365 天"
+      }
+    ],
+    "createdAt": 1705276800000,
+    "updatedAt": 1705276800000
+  }
+]

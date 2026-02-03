@@ -1,0 +1,26 @@
+{
+  "name": "site_stats",
+  "title": "网站统计",
+  "schemas": [
+    {
+      "name": "totalViews",
+      "title": "总浏览量",
+      "type": "Number"
+    },
+    {
+      "name": "totalArticles",
+      "title": "文章总数",
+      "type": "Number"
+    },
+    {
+      "name": "totalVisitors",
+      "title": "访客人数",
+      "type": "Number"
+    },
+    {
+      "name": "monthlyGrowth",
+      "title": "本月增长",
+      "type": "String"
+    }
+  ]
+}

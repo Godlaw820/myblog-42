@@ -1,69 +1,115 @@
 // @ts-ignore;
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { Eye, TrendingUp, BookOpen, Users, ArrowRight } from 'lucide-react';
+// @ts-ignore;
+import { useToast } from '@/components/ui';
 
 import { Navbar } from '@/components/Navbar.jsx';
 import { GlassCard } from '@/components/GlassCard.jsx';
 export default function Home(props) {
+  const {
+    toast
+  } = useToast();
+  const [stats, setStats] = useState(null);
+  const [popularArticles, setPopularArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const handleNavigate = pageId => {
     props.$w.utils.navigateTo({
       pageId,
       params: {}
     });
   };
-  const stats = [{
-    label: '总浏览量',
-    value: '12,580',
-    icon: Eye,
-    color: '#00d4ff'
-  }, {
-    label: '文章总数',
-    value: '48',
-    icon: BookOpen,
-    color: '#ff6b9d'
-  }, {
-    label: '访客人数',
-    value: '3,240',
-    icon: Users,
-    color: '#00d4ff'
-  }, {
-    label: '本月增长',
-    value: '+23%',
-    icon: TrendingUp,
-    color: '#ff6b9d'
-  }];
-  const popularArticles = [{
-    id: 5,
-    title: 'React Hooks 最佳实践指南',
-    views: 4231,
-    category: '技术',
-    date: '2024-01-05'
-  }, {
-    id: 3,
-    title: '设计思维在产品开发中的应用',
-    views: 3156,
-    category: '设计',
-    date: '2024-01-10'
-  }, {
-    id: 1,
-    title: '探索现代前端开发的未来',
-    views: 2847,
-    category: '技术',
-    date: '2024-01-15'
-  }, {
-    id: 6,
-    title: '色彩心理学在界面设计中的运用',
-    views: 2189,
-    category: '设计',
-    date: '2024-01-03'
-  }, {
-    id: 2,
-    title: '极简主义生活的艺术',
-    views: 1923,
-    category: '生活',
-    date: '2024-01-12'
-  }];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // 获取统计数据
+        const statsResult = await props.$w.cloud.callDataSource({
+          dataSourceName: 'site_stats',
+          methodName: 'wedaGetRecordsV2',
+          params: {
+            filter: {
+              where: {}
+            },
+            select: {
+              $master: true
+            },
+            pageSize: 1,
+            pageNumber: 1
+          }
+        });
+        if (statsResult.records && statsResult.records.length > 0) {
+          const statsData = statsResult.records[0];
+          setStats([{
+            label: '总浏览量',
+            value: statsData.totalViews.toLocaleString(),
+            icon: Eye,
+            color: '#00d4ff'
+          }, {
+            label: '文章总数',
+            value: statsData.totalArticles,
+            icon: BookOpen,
+            color: '#ff6b9d'
+          }, {
+            label: '访客人数',
+            value: statsData.totalVisitors.toLocaleString(),
+            icon: Users,
+            color: '#00d4ff'
+          }, {
+            label: '本月增长',
+            value: statsData.monthlyGrowth,
+            icon: TrendingUp,
+            color: '#ff6b9d'
+          }]);
+        }
+
+        // 获取热门文章（按浏览量排序，取前5篇）
+        const articlesResult = await props.$w.cloud.callDataSource({
+          dataSourceName: 'article',
+          methodName: 'wedaGetRecordsV2',
+          params: {
+            filter: {
+              where: {}
+            },
+            select: {
+              $master: true
+            },
+            orderBy: [{
+              views: 'desc'
+            }],
+            pageSize: 5,
+            pageNumber: 1
+          }
+        });
+        if (articlesResult.records) {
+          setPopularArticles(articlesResult.records.map(article => ({
+            id: article._id,
+            title: article.title,
+            views: article.views,
+            category: article.category,
+            date: article.date
+          })));
+        }
+      } catch (error) {
+        console.error('获取数据失败:', error);
+        toast({
+          title: '获取数据失败',
+          description: error.message || '请稍后重试',
+          variant: 'destructive'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [props.$w.cloud, toast]);
+  if (loading) {
+    return <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23] flex items-center justify-center">
+        <div className="text-white text-xl">加载中...</div>
+      </div>;
+  }
   return <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23] relative overflow-hidden">
       {/* Background Decorations */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -99,7 +145,7 @@ export default function Home(props) {
               数据概览
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map((stat, index) => <GlassCard key={index} className="p-6">
+              {stats && stats.map((stat, index) => <GlassCard key={index} className="p-6">
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="text-white/60 text-sm mb-2">{stat.label}</p>
