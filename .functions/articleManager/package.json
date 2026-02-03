@@ -1,0 +1,9 @@
+{
+  "name": "articleManager",
+  "version": "1.0.0",
+  "description": "文章管理云函数 - 实现文章的CRUD操作",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.3.7"
+  }
+}

@@ -24,25 +24,19 @@ export default function AdminPage({
   const loadArticles = async () => {
     setLoading(true);
     try {
-      const result = await $w.cloud.callDataSource({
-        dataSourceName: 'article',
-        methodName: 'wedaGetRecordsV2',
-        params: {
-          filter: {
-            where: {}
-          },
-          orderBy: [{
-            date: 'desc'
-          }],
-          select: {
-            $master: true
-          },
-          getCount: true,
-          pageSize: 100,
-          pageNumber: 1
+      const result = await $w.cloud.callFunction({
+        name: 'articleManager',
+        data: {
+          action: 'queryAll',
+          limit: 100,
+          offset: 0
         }
       });
-      setArticles(result.records || []);
+      if (result.success) {
+        setArticles(result.data.records || []);
+      } else {
+        throw new Error(result.error?.message || '加载文章列表失败');
+      }
     } catch (error) {
       toast({
         title: '加载失败',
@@ -72,19 +66,32 @@ export default function AdminPage({
   // 创建文章
   const handleCreate = async data => {
     try {
-      await $w.cloud.callDataSource({
-        dataSourceName: 'article',
-        methodName: 'wedaCreateV2',
-        params: {
+      const result = await $w.cloud.callFunction({
+        name: 'articleManager',
+        data: {
+          action: 'create',
           data: {
             ...data,
             views: 0
           }
         }
       });
-      setShowEditor(false);
-      loadArticles();
+      if (result.success) {
+        setShowEditor(false);
+        loadArticles();
+        toast({
+          title: '创建成功',
+          description: '文章已创建'
+        });
+      } else {
+        throw new Error(result.error?.message || '创建文章失败');
+      }
     } catch (error) {
+      toast({
+        title: '创建失败',
+        description: error.message || '请稍后重试',
+        variant: 'destructive'
+      });
       throw error;
     }
   };
@@ -92,10 +99,11 @@ export default function AdminPage({
   // 更新文章
   const handleUpdate = async data => {
     try {
-      await $w.cloud.callDataSource({
-        dataSourceName: 'article',
-        methodName: 'wedaUpdateV2',
-        params: {
+      const result = await $w.cloud.callFunction({
+        name: 'articleManager',
+        data: {
+          action: 'update',
+          id: editingArticle._id,
           data: {
             title: data.title,
             content: data.content,
@@ -104,22 +112,26 @@ export default function AdminPage({
             date: data.date,
             readTime: data.readTime,
             image: data.image
-          },
-          filter: {
-            where: {
-              $and: [{
-                _id: {
-                  $eq: editingArticle._id
-                }
-              }]
-            }
           }
         }
       });
-      setShowEditor(false);
-      setEditingArticle(null);
-      loadArticles();
+      if (result.success) {
+        setShowEditor(false);
+        setEditingArticle(null);
+        loadArticles();
+        toast({
+          title: '更新成功',
+          description: '文章已更新'
+        });
+      } else {
+        throw new Error(result.error?.message || '更新文章失败');
+      }
     } catch (error) {
+      toast({
+        title: '更新失败',
+        description: error.message || '请稍后重试',
+        variant: 'destructive'
+      });
       throw error;
     }
   };
@@ -130,26 +142,22 @@ export default function AdminPage({
       return;
     }
     try {
-      await $w.cloud.callDataSource({
-        dataSourceName: 'article',
-        methodName: 'wedaDeleteV2',
-        params: {
-          filter: {
-            where: {
-              $and: [{
-                _id: {
-                  $eq: articleId
-                }
-              }]
-            }
-          }
+      const result = await $w.cloud.callFunction({
+        name: 'articleManager',
+        data: {
+          action: 'delete',
+          id: articleId
         }
       });
-      toast({
-        title: '删除成功',
-        description: '文章已删除'
-      });
-      loadArticles();
+      if (result.success) {
+        toast({
+          title: '删除成功',
+          description: '文章已删除'
+        });
+        loadArticles();
+      } else {
+        throw new Error(result.error?.message || '删除文章失败');
+      }
     } catch (error) {
       toast({
         title: '删除失败',
