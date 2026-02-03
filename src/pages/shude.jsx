@@ -1,9 +1,9 @@
 // @ts-ignore;
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
-import { Code, Database, Layout, Server, Smartphone, Zap } from 'lucide-react';
+import { Code, Database, Layout, Server, Smartphone, Zap, Settings } from 'lucide-react';
 // @ts-ignore;
-import { useToast } from '@/components/ui';
+import { useToast, Button } from '@/components/ui';
 
 import { Navbar } from '@/components/Navbar.jsx';
 import { GlassCard } from '@/components/GlassCard.jsx';
@@ -94,16 +94,24 @@ export default function Shude(props) {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <section className="mb-12">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-4" style={{
-            fontFamily: 'Space Grotesk, sans-serif'
-          }}>
-              术得
-            </h1>
-            <p className="text-xl text-white/70 max-w-2xl" style={{
-            fontFamily: 'Inter, sans-serif'
-          }}>
-              技术实现与工程实践。在这里，我分享具体的技术方案、代码实现和项目经验。
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-5xl lg:text-6xl font-bold text-white mb-4" style={{
+                fontFamily: 'Space Grotesk, sans-serif'
+              }}>
+                  术得
+                </h1>
+                <p className="text-xl text-white/70 max-w-2xl" style={{
+                fontFamily: 'Inter, sans-serif'
+              }}>
+                  技术实现与工程实践。在这里，我分享具体的技术方案、代码实现和项目经验。
+                </p>
+              </div>
+              <Button onClick={() => handleNavigate('admin')} className="bg-white/10 hover:bg-white/20 text-white border border-white/20">
+                <Settings className="h-4 w-4 mr-2" />
+                管理文章
+              </Button>
+            </div>
           </section>
 
           {/* Tech Projects Grid */}

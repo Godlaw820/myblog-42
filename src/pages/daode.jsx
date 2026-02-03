@@ -1,9 +1,9 @@
 // @ts-ignore;
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
-import { Calendar, Clock, Eye, Filter, Search } from 'lucide-react';
+import { Calendar, Clock, Eye, Filter, Search, Settings } from 'lucide-react';
 // @ts-ignore;
-import { useToast } from '@/components/ui';
+import { useToast, Button } from '@/components/ui';
 
 import { Navbar } from '@/components/Navbar.jsx';
 import { GlassCard } from '@/components/GlassCard.jsx';
@@ -104,12 +104,20 @@ export default function Daode(props) {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <section className="mb-12">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-4 font-['Space_Grotesk']">
-              道得
-            </h1>
-            <p className="text-xl text-white/70 max-w-2xl font-['Inter']">
-              在这里，我分享我的思考、感悟和见解。每一篇文章都是一次心灵的对话。
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-5xl lg:text-6xl font-bold text-white mb-4 font-['Space_Grotesk']">
+                  道得
+                </h1>
+                <p className="text-xl text-white/70 max-w-2xl font-['Inter']">
+                  在这里，我分享我的思考、感悟和见解。每一篇文章都是一次心灵的对话。
+                </p>
+              </div>
+              <Button onClick={() => handleNavigate('admin')} className="bg-white/10 hover:bg-white/20 text-white border border-white/20">
+                <Settings className="h-4 w-4 mr-2" />
+                管理文章
+              </Button>
+            </div>
           </section>
 
           {/* Search and Filter */}
