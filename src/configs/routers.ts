@@ -1,6 +1,8 @@
 import HOME from '../pages/home.jsx';
 import ARTICLE from '../pages/article.jsx';
 import ABOUT from '../pages/about.jsx';
+import DAODE from '../pages/daode.jsx';
+import SHUDE from '../pages/shude.jsx';
 export const routers = [{
   id: "home",
   component: HOME
@@ -10,4 +12,10 @@ export const routers = [{
 }, {
   id: "about",
   component: ABOUT
+}, {
+  id: "daode",
+  component: DAODE
+}, {
+  id: "shude",
+  component: SHUDE
 }]
