@@ -1,9 +1,9 @@
 // @ts-ignore;
 import React, { useState, useEffect } from 'react';
 // @ts-ignore;
-import { ArrowLeft, Calendar, Clock, Share2, Heart, Eye, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Share2, Heart, Eye } from 'lucide-react';
 // @ts-ignore;
-import { useToast, Button } from '@/components/ui';
+import { useToast } from '@/components/ui';
 
 import { Navbar } from '@/components/Navbar.jsx';
 import { GlassCard } from '@/components/GlassCard.jsx';
@@ -15,7 +15,6 @@ export default function Article(props) {
   const [liked, setLiked] = useState(false);
   const [viewCount, setViewCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState(false);
 
   // 加载文章数据
   useEffect(() => {
@@ -70,54 +69,6 @@ export default function Article(props) {
   };
   const handleBack = () => {
     props.$w.utils.navigateBack();
-  };
-
-  // 编辑文章
-  const handleEdit = () => {
-    props.$w.utils.navigateTo({
-      pageId: 'admin',
-      params: {
-        editId: article._id
-      }
-    });
-  };
-
-  // 删除文章
-  const handleDelete = async () => {
-    if (!confirm('确定要删除这篇文章吗？此操作不可恢复。')) {
-      return;
-    }
-    setDeleting(true);
-    try {
-      await props.$w.cloud.callDataSource({
-        dataSourceName: 'article',
-        methodName: 'wedaDeleteV2',
-        params: {
-          filter: {
-            where: {
-              $and: [{
-                _id: {
-                  $eq: article._id
-                }
-              }]
-            }
-          }
-        }
-      });
-      toast({
-        title: '删除成功',
-        description: '文章已删除'
-      });
-      handleBack();
-    } catch (error) {
-      toast({
-        title: '删除失败',
-        description: error.message || '请稍后重试',
-        variant: 'destructive'
-      });
-    } finally {
-      setDeleting(false);
-    }
   };
   if (loading) {
     return <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23] flex items-center justify-center relative overflow-hidden">
@@ -207,14 +158,6 @@ export default function Article(props) {
                 <Share2 size={18} className="mr-2" />
                 分享
               </button>
-              <div className="flex gap-2 ml-auto">
-                <Button size="icon" variant="ghost" onClick={handleEdit} className="text-white hover:bg-white/10">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button size="icon" variant="ghost" onClick={handleDelete} disabled={deleting} className="text-red-400 hover:bg-red-500/10">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
             </div>
 
             {/* Featured Image */}

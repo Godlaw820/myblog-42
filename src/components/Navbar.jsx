@@ -1,7 +1,7 @@
 // @ts-ignore;
 import React, { useState } from 'react';
 // @ts-ignore;
-import { Menu, X, Settings } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 export function Navbar({
   currentPage,
@@ -20,10 +20,6 @@ export function Navbar({
   }, {
     id: 'about',
     label: '关于'
-  }, {
-    id: 'admin',
-    label: '管理',
-    icon: Settings
   }];
   return <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1a2e]/80 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6 py-4">
